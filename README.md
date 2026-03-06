@@ -103,7 +103,25 @@ Por confidencialidad, se utiliza un dataset inventado pero realista basado en un
 * Busca la demanda del “mismo slot” del año anterior (ruta + weekday + hora).
 * Ajusta por tendencia usando rolling mean reciente vs rolling mean LY.
 * Aplica cap por capacidad.
-* *Métricas:* (Pendiente de Notebook 04)
+* *Métricas:* Baseline (LY same-slot + trend adjustment)
+Se implementó un baseline operativo explicable: demanda del mismo “slot” del año anterior (ruta + día semana + hora), ajustada por tendencia con medias móviles recientes y capada por capacidad.
+En el periodo de test desde 2025-07-01 (n=2346 salidas), el baseline alcanza:
+
+MAE = 90.33 pax/salida
+
+WAPE = 12.93%
+
+Rendimiento por ruta (WAPE):
+
+DEN–IBZ: 11.01% (n=665)
+
+DEN–FOR: 11.77% (n=665)
+
+VAL–IBZ: 14.98% (n=508)
+
+DEN–PMI: 15.75% (n=508)
+
+Estas métricas establecen el benchmark que el modelo ML debe superar para justificar su despliegue.
 
 ### 8.2 Modelo ML (Feature-based)
 **Modelo tipo árbol (Random Forest / Gradient Boosting):**
