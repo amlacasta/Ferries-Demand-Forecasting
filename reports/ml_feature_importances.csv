@@ -1,0 +1,13 @@
+,0
+pax_roll_mean_20,0.39304748
+weekday,0.15971075
+sea_bad_proxy,0.10506435
+is_holiday_proxy,0.07414787
+capacity_pax,0.07117544
+price_index,0.041333437
+pax_lag_1w,0.040060762
+pax_lag_2w,0.035869144
+pax_roll_std_20,0.022905529
+month,0.019665062
+avg_ticket_price,0.019375002
+delay_roll_mean_20,0.017645054
