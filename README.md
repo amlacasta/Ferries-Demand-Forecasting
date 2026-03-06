@@ -119,7 +119,22 @@ Estas métricas establecen el benchmark que el modelo ML debe superar para justi
 ### 8.2 Modelo ML (Feature-based)
 **Modelo tipo árbol (Random Forest / Gradient Boosting):**
 * **Features:** Lags (1w, 2w), rolling mean/std, calendario (festivos), operación (retrasos) y precio.
-* *Métricas:* (Pendiente de Notebook 05)
+* *Métricas:* 
+   * Resultados de evaluación (Backtesting temporal, cutoff 2025-07-01, n=2346)
+      * Baseline (LY same-slot + trend): MAE = 90.33, WAPE = 12.93%
+      * ML (XGBoost con features operativas): MAE = 66.50, WAPE = 9.52%
+        
+   * Mejora del ML frente al baseline:
+      * WAPE: -3.41 pp (≈ -26% de error relativo)
+      * MAE: -23.83 pax/salida (≈ -26% de error absoluto)
+        
+   * Mejora por ruta (WAPE):
+      * DEN–IBZ: 11.01% → 8.18%
+      * DEN–FOR: 11.77% → 9.34%
+      * VAL–IBZ: 14.98% → 10.51%
+      * DEN–PMI: 15.75% → 10.98%
+
+El modelo ML supera al baseline en todas las rutas, con ganancias especialmente relevantes en las rutas con mayor variabilidad (DEN–PMI y VAL–IBZ).
 
 ---
 
