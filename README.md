@@ -104,8 +104,8 @@ Por confidencialidad, se utiliza un dataset inventado pero realista basado en un
 * Ajusta por tendencia usando rolling mean reciente vs rolling mean LY.
 * Aplica cap por capacidad.
 * *Métricas:* Baseline (LY same-slot + trend adjustment)
-Se implementó un baseline operativo explicable: demanda del mismo “slot” del año anterior (ruta + día semana + hora), ajustada por tendencia con medias móviles recientes y capada por capacidad.
-En el periodo de test desde 2025-07-01 (n=2346 salidas), el baseline alcanza:
+**Se implementó un baseline operativo explicable: demanda del mismo “slot” del año anterior (ruta + día semana + hora), ajustada por tendencia con medias móviles recientes y capada por capacidad.
+**En el periodo de test desde 2025-07-01 (n=2346 salidas), el baseline alcanza:
 
 MAE = 90.33 pax/salida
 
