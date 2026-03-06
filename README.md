@@ -136,6 +136,16 @@ Estas métricas establecen el benchmark que el modelo ML debe superar para justi
 
 El modelo ML supera al baseline en todas las rutas, con ganancias especialmente relevantes en las rutas con mayor variabilidad (DEN–PMI y VAL–IBZ).
 
+### Resultados del modelo  
+
+En el periodo de test (cutoff 2025-07-01, n=2346 salidas), el modelo ML (XGBoost) supera al baseline operativo:
+
+   * Baseline: MAE = 90.33, WAPE = 12.93%
+   * ML (XGBoost): MAE = 66.50, WAPE = 9.52%
+   * Mejora: +3.41 pp de WAPE (≈ -26% de error relativo)
+
+Esto habilita decisiones operativas más fiables para anticipar saturación y detectar sobrecapacidad.
+
 ---
 
 ## 9. Evaluación
@@ -148,9 +158,12 @@ Se utiliza backtesting temporal (sin shuffle) y métricas:
 
 ## 10. Torre de control (Decisiones accionables)
 Semáforo basado en ocupación forecast:
-* 🔴 **ROJO (occ_pred ≥ 0.92):** Riesgo de saturación. Acción: Evaluar refuerzo/cambio buque + ajustar inventario.
+* 🔴 **ROJO (occ_pred ≥ 0.92):** Riesgo de saturación. Acción: Evaluar refuerzo/cambio buque + ajustar inventario/precio.
 * 🟡 **ÁMBAR (0.80–0.92):** Vigilar curva de reserva. Acción: Microajustes + seguimiento.
-* 🟢 **VERDE (< 0.60):** Sobrecapacidad. Acción: Promo táctica / bundles / campañas.
+* 🟢 **VERDE (< 0.60):** Sobrecapacidad. Acción: Promo táctica / bundles / campañas por ruta y salida.
+* ⚪ **NORMAL:** Operación estable.
+
+ Distribución observada en el set evaluado: VERDE 41.4%, NORMAL 33.8%, ÁMBAR 14.4%, ROJO 10.4%. 
 
 ---
 
