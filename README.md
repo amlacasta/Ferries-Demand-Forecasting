@@ -4,15 +4,36 @@
 ![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-lightgrey)
 ![XGBoost](https://img.shields.io/badge/Model-XGBoost-orange)
 ![Forecasting](https://img.shields.io/badge/Use%20Case-Demand%20Forecasting-green)
-![Status](https://img.shields.io/badge/Status-Portfolio%20Project-brightgreen)
+![Dashboard](https://img.shields.io/badge/Dashboard-GitHub%20Pages-brightgreen)
+![Status](https://img.shields.io/badge/Status-Portfolio%20Project-success)
+
+## Dashboard interactivo
+
+El proyecto incluye una torre de control HTML publicada con GitHub Pages:
+
+[**Abrir dashboard LevanteFerries**](https://amlacasta.github.io/Ferries-Demand-Forecasting/dashboard/dashboard_levanteferries_v2.html)
+
+El dashboard permite cargar archivos CSV generados por el proyecto, filtrar por ruta, fecha y semáforo operativo, visualizar KPIs, analizar patrones de demanda y detectar salidas con riesgo de saturación o baja ocupación.
+
+Archivos recomendados para cargar en el dashboard:
+
+```text
+control_tower_table.csv
+future_forecast_30d.csv
+trip_feature_store.csv
+```
+
+---
 
 ## 1. Resumen ejecutivo
 
 Este proyecto desarrolla un sistema de **forecasting de demanda por salida** para una naviera ficticia llamada **LevanteFerries**, inspirada en operaciones reales de transporte marítimo de pasajeros entre el Levante peninsular y Baleares.
 
-El objetivo es anticipar la demanda futura de pasajeros a nivel operativo, es decir:
+El objetivo es anticipar la demanda futura de pasajeros a nivel operativo:
 
-**ruta + fecha + hora + capacidad del buque**
+```text
+ruta + fecha + hora + capacidad del buque
+```
 
 El proyecto convierte un problema clásico de operaciones —variabilidad de demanda, saturación e infrautilización— en una solución analítica capaz de:
 
@@ -108,9 +129,9 @@ Por motivos de confidencialidad, se utiliza un dataset **sintético pero realist
 
 ### 5.1 Unidad de análisis
 
-La unidad principal es la salida:
-
-**1 fila = 1 salida de ferry**
+```text
+1 fila = 1 salida de ferry
+```
 
 Cada salida contiene información sobre ruta, fecha, hora, capacidad, demanda real, precio, ocupación y variables operativas.
 
@@ -187,190 +208,15 @@ Ferries-Demand-Forecasting/
 
 El proyecto se desarrolla en siete notebooks diferenciados, siguiendo un flujo reproducible y orientado a negocio.
 
-### 7.1 Notebook 01 — Generación de datos sintéticos
-
-**Archivo:** `01_generate_synthetic_data.ipynb`
-
-Objetivo:
-
-- generar un dataset sintético realista,
-- simular salidas por ruta y fecha,
-- crear demanda de pasajeros y vehículos,
-- incorporar precio, capacidad, retrasos, mala mar y festivos proxy,
-- crear una tabla adicional de reservas diarias.
-
-Outputs principales:
-
-```text
-data/processed/trips.parquet
-data/processed/bookings.parquet
-```
-
----
-
-### 7.2 Notebook 02 — Feature Store
-
-**Archivo:** `02_data_prep_feature_store.ipynb`
-
-Objetivo:
-
-- limpiar y ordenar los datos,
-- validar calidad básica,
-- crear lags y rolling features sin fuga de información,
-- preparar el dataset final para forecasting.
-
-Features creadas:
-
-- `pax_lag_1w`
-- `pax_lag_2w`
-- `veh_lag_1w`
-- `veh_lag_2w`
-- `pax_roll_mean_20`
-- `pax_roll_std_20`
-- `delay_roll_mean_20`
-- `occ_pax_roll_mean_20`
-
-Output principal:
-
-```text
-data/processed/trip_feature_store.parquet
-```
-
----
-
-### 7.3 Notebook 03 — Análisis exploratorio
-
-**Archivo:** `03_eda_demand_patterns.ipynb`
-
-Objetivo:
-
-- analizar patrones de demanda,
-- detectar rutas de mayor presión,
-- estudiar estacionalidad,
-- revisar ocupación,
-- observar diferencias por ruta,
-- generar visualizaciones para el análisis de negocio.
-
-Outputs principales:
-
-```text
-reports/figures/
-reports/route_kpis_summary.csv
-reports/sea_effect_by_route.csv
-```
-
----
-
-### 7.4 Notebook 04 — Baseline Forecast
-
-**Archivo:** `04_baseline_forecast.ipynb`
-
-Objetivo:
-
-Construir un baseline operativo explicable basado en:
-
-**demanda del mismo slot del año anterior + ajuste por tendencia reciente**
-
-El slot se define como:
-
-```text
-ruta + día de la semana + hora de salida
-```
-
-Este baseline representa una aproximación razonable que podría usar un equipo operativo antes de aplicar machine learning.
-
-Outputs principales:
-
-```text
-data/processed/baseline_predictions.parquet
-reports/baseline_per_route_metrics.csv
-```
-
----
-
-### 7.5 Notebook 05 — Modelo ML con XGBoost
-
-**Archivo:** `05_ml_forecast.ipynb`
-
-Objetivo:
-
-Entrenar un modelo de machine learning para mejorar la predicción de demanda.
-
-Modelo utilizado:
-
-```text
-XGBoost Regressor
-```
-
-Features utilizadas:
-
-- calendario,
-- capacidad,
-- precio,
-- festivo proxy,
-- mala mar proxy,
-- lags de demanda,
-- medias móviles,
-- retraso medio reciente.
-
-Outputs principales:
-
-```text
-data/processed/ml_predictions.parquet
-reports/ml_per_route_metrics.csv
-reports/ml_feature_importances.csv
-```
-
----
-
-### 7.6 Notebook 06 — Backtesting y Torre de Control
-
-**Archivo:** `06_backtesting_control_tower.ipynb`
-
-Objetivo:
-
-- comparar baseline vs modelo ML,
-- medir rendimiento global y por ruta,
-- generar una tabla de control operativo,
-- asignar semáforos de riesgo,
-- proponer acciones operativas.
-
-Outputs principales:
-
-```text
-data/processed/control_tower_table.csv
-data/processed/control_tower_table.parquet
-reports/compare_baseline_vs_ml_global.csv
-reports/compare_baseline_vs_ml_per_route.csv
-reports/control_tower_flag_summary.csv
-```
-
----
-
-### 7.7 Notebook 07 — Predicción futura
-
-**Archivo:** `07_future_forecast_generation.ipynb`
-
-Objetivo:
-
-Pasar de la validación histórica a un escenario de uso futuro.
-
-Este notebook:
-
-- entrena el modelo final con todo el histórico disponible,
-- genera un calendario futuro de salidas,
-- construye features futuras,
-- calcula predicciones por salida,
-- estima ocupación futura,
-- asigna semáforos,
-- y exporta un archivo listo para explorar en el dashboard.
-
-Outputs principales:
-
-```text
-data/processed/future_forecast_30d.csv
-data/processed/future_forecast_30d.parquet
-```
+| Notebook | Objetivo | Output principal |
+|---|---|---|
+| `01_generate_synthetic_data.ipynb` | Generación de datos sintéticos realistas | `trips.parquet`, `bookings.parquet` |
+| `02_data_prep_feature_store.ipynb` | Limpieza, validación y creación de features temporales | `trip_feature_store.parquet` |
+| `03_eda_demand_patterns.ipynb` | Análisis exploratorio de demanda, ocupación y rutas | `route_kpis_summary.csv`, figuras |
+| `04_baseline_forecast.ipynb` | Baseline operativo explicable | `baseline_predictions.parquet` |
+| `05_ml_forecast.ipynb` | Modelo ML con XGBoost | `ml_predictions.parquet` |
+| `06_backtesting_control_tower.ipynb` | Comparativa, backtesting y torre de control | `control_tower_table.csv` |
+| `07_future_forecast_generation.ipynb` | Predicción futura a 30 días | `future_forecast_30d.csv` |
 
 ---
 
@@ -387,14 +233,7 @@ El análisis exploratorio permitió identificar diferencias claras entre rutas.
 | DEN–PMI | 638.82 |
 | VAL–IBZ | 517.42 |
 
-### 8.2 Interpretación
-
-- **DEN–IBZ** es la ruta con mayor demanda media.
-- **DEN–FOR** también presenta una demanda elevada.
-- **DEN–PMI** tiene una demanda relevante, pero menor presión relativa de capacidad.
-- **VAL–IBZ** es la ruta con menor demanda media, candidata a acciones de estímulo en periodos valle.
-
-### 8.3 Riesgo de saturación
+### 8.2 Riesgo de saturación
 
 | Ruta | Ocupación p90 |
 |---|---:|
@@ -403,12 +242,12 @@ El análisis exploratorio permitió identificar diferencias claras entre rutas.
 | DEN–PMI | 0.729 |
 | VAL–IBZ | 0.582 |
 
-### 8.4 Interpretación operativa
+### 8.3 Interpretación operativa
 
-- **DEN–IBZ** muestra saturación recurrente.
-- **DEN–FOR** se aproxima al umbral de riesgo.
-- **DEN–PMI** y **VAL–IBZ** presentan mayor margen de capacidad.
-- Las rutas con ocupación alta justifican el uso de forecasting para anticipar ventas limitadas por capacidad.
+- **DEN–IBZ** es la ruta con mayor demanda media y muestra saturación recurrente.
+- **DEN–FOR** también presenta alta demanda y se aproxima al umbral de riesgo.
+- **DEN–PMI** mantiene una demanda relevante con menor presión relativa de capacidad.
+- **VAL–IBZ** es la ruta con menor demanda media, candidata a acciones de estímulo en periodos valle.
 
 ---
 
@@ -422,51 +261,19 @@ El baseline se basa en una lógica sencilla y explicable:
 Predicción = demanda del mismo slot del año anterior × ajuste de tendencia
 ```
 
-Donde el slot es:
+Donde el slot se define como:
 
 ```text
-ruta + día de la semana + hora
+ruta + día de la semana + hora de salida
 ```
 
-Además, la predicción se capa por la capacidad máxima del buque.
-
-### Resultados del baseline
-
-Periodo de test:
-
-```text
-desde 2025-07-01
-```
-
-Número de salidas evaluadas:
-
-```text
-n = 2.346
-```
-
-| Métrica | Valor |
-|---|---:|
-| MAE | 90.33 pax/salida |
-| WAPE | 12.93% |
-
-### Rendimiento por ruta
-
-| Ruta | WAPE |
-|---|---:|
-| DEN–IBZ | 11.01% |
-| DEN–FOR | 11.77% |
-| VAL–IBZ | 14.98% |
-| DEN–PMI | 15.75% |
-
-El baseline establece un punto de comparación robusto. Cualquier modelo ML debe superar este rendimiento para justificar su uso.
-
----
+Este baseline representa una aproximación razonable que podría usar un equipo operativo antes de aplicar machine learning.
 
 ### 9.2 Modelo ML — XGBoost
 
 Se entrena un modelo **XGBoost Regressor** para capturar relaciones no lineales entre demanda, calendario, capacidad, precio y variables operativas.
 
-### Variables utilizadas
+Variables utilizadas:
 
 | Tipo | Variables |
 |---|---|
@@ -476,36 +283,6 @@ Se entrena un modelo **XGBoost Regressor** para capturar relaciones no lineales 
 | Condición externa | `sea_bad_proxy` |
 | Histórico de demanda | `pax_lag_1w`, `pax_lag_2w`, `pax_roll_mean_20`, `pax_roll_std_20` |
 | Operación | `delay_roll_mean_20` |
-
-### Resultados del modelo ML
-
-| Modelo | MAE | WAPE |
-|---|---:|---:|
-| Baseline | 90.33 | 12.93% |
-| XGBoost | 66.50 | 9.52% |
-
-### Mejora frente al baseline
-
-| Métrica | Mejora |
-|---|---:|
-| WAPE | -3.41 puntos porcentuales |
-| Error relativo | -26% aprox. |
-| MAE | -23.83 pax/salida |
-
-### Mejora por ruta
-
-| Ruta | WAPE Baseline | WAPE ML |
-|---|---:|---:|
-| DEN–IBZ | 11.01% | 8.18% |
-| DEN–FOR | 11.77% | 9.34% |
-| VAL–IBZ | 14.98% | 10.51% |
-| DEN–PMI | 15.75% | 10.98% |
-
-### Interpretación
-
-El modelo ML supera al baseline en todas las rutas. Las mayores mejoras aparecen en rutas con mayor variabilidad relativa, especialmente **DEN–PMI** y **VAL–IBZ**.
-
-Esto confirma que el modelo no solo mejora la media global, sino que aporta valor en rutas donde una regla operativa simple resulta menos precisa.
 
 ---
 
@@ -519,17 +296,31 @@ Esto es importante porque en forecasting el orden temporal debe respetarse:
 entrenar con pasado → predecir futuro
 ```
 
-### Métricas utilizadas
+### 10.1 Resultados globales
 
-| Métrica | Descripción |
-|---|---|
-| MAE | Error medio absoluto en pasajeros |
-| WAPE | Error absoluto ponderado, útil para operaciones |
-| WAPE por ruta | Permite detectar rutas más difíciles de predecir |
+| Modelo | MAE | WAPE |
+|---|---:|---:|
+| Baseline | 90.33 | 12.93% |
+| XGBoost | 66.50 | 9.52% |
 
-### Por qué WAPE
+### 10.2 Mejora frente al baseline
 
-WAPE es especialmente útil en operaciones porque pondera el error según el volumen total de demanda. Esto evita que rutas pequeñas distorsionen la lectura global del rendimiento.
+| Métrica | Mejora |
+|---|---:|
+| WAPE | -3.41 puntos porcentuales |
+| Error relativo | -26% aprox. |
+| MAE | -23.83 pax/salida |
+
+### 10.3 Mejora por ruta
+
+| Ruta | WAPE Baseline | WAPE ML |
+|---|---:|---:|
+| DEN–IBZ | 11.01% | 8.18% |
+| DEN–FOR | 11.77% | 9.34% |
+| VAL–IBZ | 14.98% | 10.51% |
+| DEN–PMI | 15.75% | 10.98% |
+
+El modelo ML supera al baseline en todas las rutas. Las mayores mejoras aparecen en rutas con mayor variabilidad relativa, especialmente **DEN–PMI** y **VAL–IBZ**.
 
 ---
 
@@ -544,8 +335,6 @@ ocupación prevista = pax_pred_ml / capacity_pax
 ```
 
 A partir de esa ocupación prevista se asigna un semáforo.
-
-### Semáforos
 
 | Flag | Condición | Interpretación | Acción sugerida |
 |---|---|---|---|
@@ -563,38 +352,23 @@ A partir de esa ocupación prevista se asigna un semáforo.
 | ÁMBAR | 14.4% |
 | ROJO | 10.4% |
 
-### Interpretación operativa
-
-- Aproximadamente 1 de cada 10 salidas presenta riesgo de saturación.
-- Una parte relevante de salidas aparece en verde, lo que indica oportunidades comerciales para mejorar ocupación.
-- Las salidas ámbar permiten actuar de forma preventiva antes de llegar a saturación.
-
 ---
 
 ## 12. Predicción futura
 
 El Notebook 07 convierte el modelo validado en un flujo de predicción futura.
 
-### Flujo
+Flujo principal:
 
 1. Entrenar el modelo final con todo el histórico disponible.
 2. Generar un calendario futuro de salidas.
-3. Crear features futuras:
-   - ruta,
-   - fecha,
-   - hora,
-   - día de semana,
-   - mes,
-   - capacidad planificada,
-   - precio esperado,
-   - proxies de festivo y mala mar,
-   - lags y rolling features desde histórico.
+3. Crear features futuras.
 4. Predecir pasajeros esperados.
 5. Calcular ocupación prevista.
 6. Asignar semáforo operativo.
 7. Exportar resultados para dashboard.
 
-### Output futuro
+Output principal:
 
 ```text
 future_forecast_30d.csv
@@ -614,8 +388,6 @@ Columnas principales:
 
 ### Resultado del forecast futuro
 
-Distribución de flags en el forecast futuro generado:
-
 | Flag | Salidas |
 |---|---:|
 | VERDE | 232 |
@@ -623,32 +395,17 @@ Distribución de flags en el forecast futuro generado:
 | ÁMBAR | 33 |
 | ROJO | 5 |
 
-### Interpretación
-
-- **VERDE:** oportunidad de estimular demanda.
-- **NORMAL:** operación estable.
-- **ÁMBAR:** salidas a vigilar.
-- **ROJO:** salidas críticas que requieren revisión operativa.
-
 Este paso transforma el proyecto en una herramienta de soporte a la decisión.
 
 ---
 
 ## 13. Dashboard HTML interactivo
 
-Se ha desarrollado un dashboard en HTML con **Plotly.js**, pensado para explorar los datos de forma sencilla sin necesidad de servidor.
+El dashboard está desarrollado en HTML con **Plotly.js** y está publicado en GitHub Pages.
 
-### Archivos compatibles
+[**Abrir dashboard LevanteFerries**](https://amlacasta.github.io/Ferries-Demand-Forecasting/dashboard/dashboard_levanteferries_v2.html)
 
-El dashboard permite subir archivos CSV como:
-
-```text
-control_tower_table.csv
-trip_feature_store.csv
-future_forecast_30d.csv
-```
-
-### Funcionalidades
+Funcionalidades principales:
 
 - carga manual de CSV,
 - filtros por ruta,
@@ -664,12 +421,7 @@ future_forecast_30d.csv
 - ranking de salidas con mayor riesgo,
 - exportación del CSV filtrado.
 
-### Uso
-
-1. Abrir el archivo HTML en navegador.
-2. Subir uno de los CSV generados.
-3. Filtrar por ruta, fecha o flag.
-4. Analizar patrones e identificar oportunidades operativas.
+El dashboard permite explorar tanto la torre de control histórica como las predicciones futuras generadas por el modelo.
 
 ---
 
@@ -729,7 +481,7 @@ Ejecutar los notebooks en este orden:
 
 Este proyecto demuestra cómo un sistema de forecasting puede ayudar a una naviera a tomar mejores decisiones.
 
-### 15.1 Capacidad
+### Capacidad
 
 Permite detectar salidas con alta ocupación prevista y revisar:
 
@@ -739,14 +491,14 @@ Permite detectar salidas con alta ocupación prevista y revisar:
 - refuerzo operativo,
 - preparación portuaria.
 
-### 15.2 Pricing
+### Pricing
 
 Permite ajustar precios según presión de demanda:
 
 - mayor presión → revisión de pricing,
 - baja ocupación → promociones tácticas.
 
-### 15.3 Marketing y ventas
+### Marketing y ventas
 
 Permite activar acciones sobre salidas verdes:
 
@@ -756,7 +508,7 @@ Permite activar acciones sobre salidas verdes:
 - ida/vuelta,
 - coche + pasajero.
 
-### 15.4 Operaciones
+### Operaciones
 
 Permite anticipar:
 
@@ -765,7 +517,7 @@ Permite anticipar:
 - necesidades de personal,
 - ventanas de mayor presión.
 
-### 15.5 Control de gestión
+### Control de gestión
 
 Permite monitorizar:
 
